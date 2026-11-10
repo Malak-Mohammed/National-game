@@ -237,4 +237,179 @@
             <!-- Certificate Body -->
             <div class="my-8 space-y-5">
                 <h2 class="amiri-font text-3xl md:text-5xl font-bold text-flag-darkRed tracking-wide">شهادة تقدير وتفوق</h2>
-                <p class="text-gray-600 text-base md
+                <p class="text-gray-600 text-base md:text-lg">تتشرف إدارة مدرسة جوهرة شناص للبنات (5-8) بتكريم الفارسـة:</p>
+                
+                <!-- Clear High-Contrast Name Display -->
+                <div class="py-2">
+                    <h3 id="certStudentName" class="amiri-font text-3xl md:text-4xl font-bold text-flag-green border-b-2 border-flag-gold inline-block px-8 py-1 bg-gray-50/50 rounded-lg"></h3>
+                </div>
+                
+                <p class="text-gray-800 text-base md:text-lg leading-relaxed max-w-2xl mx-auto pt-2">
+                    بالصف (<span id="certStudentClass" class="font-bold text-flag-darkRed"></span>) لتميزها وحصولها على درجة <span id="certScore" class="font-bold text-flag-red"></span> في مسابقة "فارسات الوطن". متمنين لها دوام التوفيق والنجاح.
+                </p>
+            </div>
+
+            <!-- Certificate Footer / Signatures -->
+            <div class="mt-12 pt-6 border-t border-gray-200 flex justify-between items-end text-sm md:text-base font-bold text-gray-700">
+                <div class="text-center">
+                    <p class="mb-8">مشرفة المسابقة</p>
+                    <p class="text-gray-400 font-normal">________________</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-16 h-16 rounded-full border-2 border-flag-gold flex items-center justify-center text-flag-gold mx-auto mb-1 opacity-80">
+                        <i class="fa-solid fa-stamp text-2xl"></i>
+                    </div>
+                    <p class="text-xs text-gray-400">ختم المدرسة</p>
+                </div>
+                <div class="text-center">
+                    <p class="mb-8">إدارة المدرسة</p>
+                    <p class="text-gray-400 font-normal">________________</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls for Certificate -->
+        <div class="mt-6 flex justify-center gap-4 no-print">
+            <button onclick="window.print()" class="bg-flag-darkRed hover:bg-flag-red text-white font-bold py-2.5 px-6 rounded-xl shadow transition flex items-center gap-2 cursor-pointer">
+                <i class="fa-solid fa-print"></i>
+                <span>طباعة الشهادة</span>
+            </button>
+            <button onclick="hideCertificate()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2.5 px-6 rounded-xl transition cursor-pointer">
+                إغلاق
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 py-4 text-center text-xs md:text-sm text-gray-500 no-print mt-auto">
+        <p>جميع الحقوق محفوظة © مدرسة جوهرة شناص للبنات (5-8)</p>
+    </footer>
+
+    <!-- Quiz JavaScript Logic -->
+    <script>
+        const questions = [
+            {
+                question: "متى تحتفل سلطنة عمان بالعيد الوطني المجيد؟",
+                options: ["18 نوفمبر", "23 يوليو", "18 ديسمبر", "1 يناير"],
+                correct: 0
+            },
+            {
+                question: "ما هي عاصمة سلطنة عمان؟",
+                options: ["صحار", "صلالة", "مسقط", "نزوى"],
+                correct: 2
+            },
+            {
+                question: "ما هو الزي التقليدي الذي تشتهر به المرأة العمانية؟",
+                options: ["الدراعة واللحاف العماني", "الثوب الفاسي", "القفتان", "الساري"],
+                correct: 0
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let studentData = { name: '', class: '' };
+        let selectedOption = null;
+
+        function startQuiz(e) {
+            e.preventDefault();
+            studentData.name = document.getElementById('studentName').value;
+            studentData.class = document.getElementById('studentClass').value;
+
+            document.getElementById('startCard').classList.add('hidden');
+            document.getElementById('quizCard').classList.remove('hidden');
+
+            currentQuestion = 0;
+            score = 0;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('questionCounter').innerText = `السؤال ${currentQuestion + 1} من ${questions.length}`;
+            document.getElementById('scoreDisplay').innerText = `النقاط: ${score}`;
+            document.getElementById('questionText').innerText = q.question;
+
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            selectedOption = null;
+
+            const nextBtn = document.getElementById('nextBtn');
+            nextBtn.disabled = true;
+            nextBtn.className = "bg-gray-300 text-gray-500 font-bold py-2.5 px-6 rounded-xl transition cursor-not-allowed flex items-center gap-2";
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-right p-4 rounded-xl border-2 border-gray-200 hover:border-flag-lightGreen hover:bg-green-50 transition text-gray-700 font-medium flex items-center justify-between cursor-pointer";
+                btn.innerHTML = `<span>${opt}</span> <i class="fa-regular fa-circle text-gray-400"></i>`;
+                btn.onclick = () => selectOption(idx, btn);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function selectOption(idx, btnElement) {
+            selectedOption = idx;
+            const buttons = document.getElementById('optionsContainer').children;
+            for (let btn of buttons) {
+                btn.className = "w-full text-right p-4 rounded-xl border-2 border-gray-200 hover:border-flag-lightGreen hover:bg-green-50 transition text-gray-700 font-medium flex items-center justify-between cursor-pointer";
+                btn.querySelector('i').className = "fa-regular fa-circle text-gray-400";
+            }
+
+            btnElement.className = "w-full text-right p-4 rounded-xl border-2 border-flag-green bg-green-50 transition text-flag-green font-bold flex items-center justify-between cursor-pointer";
+            btnElement.querySelector('i').className = "fa-solid fa-circle-check text-flag-green";
+
+            const nextBtn = document.getElementById('nextBtn');
+            nextBtn.disabled = false;
+            nextBtn.className = "bg-flag-red hover:bg-flag-darkRed text-white font-bold py-2.5 px-6 rounded-xl shadow transition cursor-pointer flex items-center gap-2";
+        }
+
+        function nextQuestion() {
+            if (selectedOption === questions[currentQuestion].correct) {
+                score++;
+            }
+
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quizCard').classList.add('hidden');
+            document.getElementById('resultCard').classList.remove('hidden');
+
+            document.getElementById('resultText').innerHTML = 
+                `أحسنتِ يا <strong>${studentData.name}</strong>!<br>لقد حصلتِ على <strong>${score}</strong> من <strong>${questions.length}</strong> نقاط.`;
+
+            if (score === questions.length) {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            }
+        }
+
+        function showCertificate() {
+            document.getElementById('certStudentName').innerText = studentData.name;
+            document.getElementById('certStudentClass').innerText = studentData.class;
+            document.getElementById('certScore').innerText = `${score} من ${questions.length}`;
+
+            document.getElementById('resultCard').classList.add('hidden');
+            document.getElementById('certificateContainer').classList.remove('hidden');
+        }
+
+        function hideCertificate() {
+            document.getElementById('certificateContainer').classList.add('hidden');
+            document.getElementById('resultCard').classList.remove('hidden');
+        }
+
+        function restartQuiz() {
+            document.getElementById('resultCard').classList.add('hidden');
+            document.getElementById('startCard').classList.remove('hidden');
+            document.getElementById('startForm').reset();
+        }
+    </script>
+</body>
+</html>
